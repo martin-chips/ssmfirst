@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dimple.dao.SalaryMapper">
+    <resultMap id="BaseResultMap" type="com.dimple.bean.Salary">
+        <id column="sala_id" jdbcType="INTEGER" property="salaId"/>
+        <result column="sala_empId" jdbcType="INTEGER" property="salaEmpid"/>
+        <result column="sala_baseSalary" jdbcType="DOUBLE" property="salaBasesalary"/>
+        <result column="sala_performanceSalary" jdbcType="DOUBLE" property="salaPerformancesalary"/>
+        <result column="sala_attendance" jdbcType="DOUBLE" property="salaAttendance"/>
+        <result column="sala_station" jdbcType="DOUBLE" property="salaStation"/>
+    </resultMap>
+    <sql id="Example_Where_Clause">
+        <where>
+            <foreach collection="oredCriteria" item="criteria" separator="or">
+                <if test="criteria.valid">
+                    <trim prefix="(" prefixOverrides="and" suffix=")">
+                        <foreach collection="criteria.criteria" item="criterion">
+                            <choose>
+                                <when test="criterion.noValue">
+                                    and ${criterion.condition}
+                                </when>
+                                <when test="criterion.singleValue">
+                                    and ${criterion.condition} #{criterion.value}
+                                </when>
+                                <when test="criterion.betweenValue">
+                                    and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                                </when>
+                                <when test="criterion.listValue">
+                                    and ${criterion.condition}
+                                    <foreach close=")" collection="criterion.value" item="listItem" open="("
+                                             separator=",">
+                                        #{listItem}
+                                    </foreach>
+                                </when>
+                            </choose>
+                        </foreach>
+                    </trim>
+                </if>
+            </foreach>
+        </where>
+    </sql>
+    <sql id="Update_By_Example_Where_Clause">
+        <where>
+            <foreach collection="example.oredCriteria" item="criteria" separator="or">
+                <if test="criteria.valid">
+                    <trim prefix="(" prefixOverrides="and" suffix=")">
+                        <foreach collection="criteria.criteria" item="criterion">
+                            <choose>
+                                <when test="criterion.noValue">
+                                    and ${criterion.condition}
+                                </when>
+                                <when test="criterion.singleValue">
+                                    and ${criterion.condition} #{criterion.value}
+                                </when>
+                                <when test="criterion.betweenValue">
+                                    and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                                </when>
+                                <when test="criterion.listValue">
+                                    and ${criterion.condition}
+                                    <foreach close=")" collection="criterion.value" item="listItem" open="("
+                                             separator=",">
+                                        #{listItem}
+                                    </foreach>
+                                </when>
+                            </choose>
+                        </foreach>
+                    </trim>
+                </if>
+            </foreach>
+        </where>
+    </sql>
+    <sql id="Base_Column_List">
+    sala_id, sala_empId, sala_baseSalary, sala_performanceSalary, sala_attendance, sala_station
+  </sql>
+    <select id="selectByExample" parameterType="com.dimple.bean.SalaryExample" resultMap="BaseResultMap">
+        select
+        <if test="distinct">
+            distinct
+        </if>
+        <include refid="Base_Column_List"/>
+        from tbl_salay
+        <if test="_parameter != null">
+            <include refid="Example_Where_Clause"/>
+        </if>
+        <if test="orderByClause != null">
+            order by ${orderByClause}
+        </if>
+    </select>
+    <!--
+        private Integer sala_id;
+    private Integer sala_empId;
+    private double sala_baseSalary;
+    private double sala_performanceSalary;
+    private double sala_attendance;
+    private double sala_station;
+    private String emp_name;
+    private String gender;
+    private String dept_name;
+sala_id,sala_empId,sala_baseSalary,sala_performanceSalary,sala_attendance,sala_station,emp_name
+,gender,dept_name
+
+    -->
+    <resultMap id="allSalary" type="com.dimple.bean.CustomSalary">
+        <id column="sala_id" jdbcType="INTEGER" property="sala_id"/>
+        <result column="sala_empId" jdbcType="INTEGER" property="sala_empId"/>
+        <result column="sala_baseSalary" jdbcType="DOUBLE" property="sala_baseSalary"/>
+        <result column="sala_performanceSalary" jdbcType="DOUBLE" property="sala_performanceSalary"/>
+        <result column="sala_attendance" jdbcType="DOUBLE" property="sala_attendance"/>
+        <result column="sala_station" jdbcType="DOUBLE" property="sala_station"/>
+        <result column="emp_name" property="emp_name"/>
+        <result column="gender" property="gender"/>
+        <result column="dept_name" property="dept_name"/>
+    </resultMap>
+    
+    
+    <select id="selectAllSalary" resultMap="allSalary">
+          SELECT
+           sala_id,sala_empId,sala_baseSalary,sala_performanceSalary,sala_attendance,sala_station,emp_name,gender,dept_name
+        FROM
+          tbl_emp,tbl_dept,tbl_salay
+        WHERE
+         tbl_salay.sala_empId=tbl_emp.emp_id and tbl_emp.d_id=tbl_dept.dept_id
+         order by
+         sala_id
+  </select>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from tbl_salay
+        where sala_id = #{salaId,jdbcType=INTEGER}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from tbl_salay
+    where sala_id = #{salaId,jdbcType=INTEGER}
+  </delete>
+    <delete id="deleteByExample" parameterType="com.dimple.bean.SalaryExample">
+        delete from tbl_salay
+        <if test="_parameter != null">
+            <include refid="Example_Where_Clause"/>
+        </if>
+    </delete>
+    <insert id="insert" parameterType="com.dimple.bean.Salary">
+    insert into tbl_salay (sala_id, sala_empId, sala_baseSalary, 
+      sala_performanceSalary, sala_attendance, sala_station
+      )
+    values (#{salaId,jdbcType=INTEGER}, #{salaEmpid,jdbcType=INTEGER}, #{salaBasesalary,jdbcType=DOUBLE}, 
+      #{salaPerformancesalary,jdbcType=DOUBLE}, #{salaAttendance,jdbcType=DOUBLE}, #{salaStation,jdbcType=DOUBLE}
+      )
+  </insert>
+    <insert id="insertSelective" parameterType="com.dimple.bean.Salary">
+        insert into tbl_salay
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="salaId != null">
+                sala_id,
+            </if>
+            <if test="salaEmpid != null">
+                sala_empId,
+            </if>
+            <if test="salaBasesalary != null">
+                sala_baseSalary,
+            </if>
+            <if test="salaPerformancesalary != null">
+                sala_performanceSalary,
+            </if>
+            <if test="salaAttendance != null">
+                sala_attendance,
+            </if>
+            <if test="salaStation != null">
+                sala_station,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="salaId != null">
+                #{salaId,jdbcType=INTEGER},
+            </if>
+            <if test="salaEmpid != null">
+                #{salaEmpid,jdbcType=INTEGER},
+            </if>
+            <if test="salaBasesalary != null">
+                #{salaBasesalary,jdbcType=DOUBLE},
+            </if>
+            <if test="salaPerformancesalary != null">
+                #{salaPerformancesalary,jdbcType=DOUBLE},
+            </if>
+            <if test="salaAttendance != null">
+                #{salaAttendance,jdbcType=DOUBLE},
+            </if>
+            <if test="salaStation != null">
+                #{salaStation,jdbcType=DOUBLE},
+            </if>
+        </trim>
+    </insert>
+    <select id="countByExample" parameterType="com.dimple.bean.SalaryExample" resultType="java.lang.Long">
+        select count(*) from tbl_salay
+        <if test="_parameter != null">
+            <include refid="Example_Where_Clause"/>
+        </if>
+    </select>
+    <update id="updateByExampleSelective" parameterType="map">
+        update tbl_salay
+        <set>
+            <if test="record.salaId != null">
+                sala_id = #{record.salaId,jdbcType=INTEGER},
+            </if>
+            <if test="record.salaEmpid != null">
+                sala_empId = #{record.salaEmpid,jdbcType=INTEGER},
+            </if>
+            <if test="record.salaBasesalary != null">
+                sala_baseSalary = #{record.salaBasesalary,jdbcType=DOUBLE},
+            </if>
+            <if test="record.salaPerformancesalary != null">
+                sala_performanceSalary = #{record.salaPerformancesalary,jdbcType=DOUBLE},
+            </if>
+            <if test="record.salaAttendance != null">
+                sala_attendance = #{record.salaAttendance,jdbcType=DOUBLE},
+            </if>
+            <if test="record.salaStation != null">
+                sala_station = #{record.salaStation,jdbcType=DOUBLE},
+            </if>
+        </set>
+        <if test="_parameter != null">
+            <include refid="Update_By_Example_Where_Clause"/>
+        </if>
+    </update>
+    <update id="updateByExample" parameterType="map">
+        update tbl_salay
+        set sala_id = #{record.salaId,jdbcType=INTEGER},
+        sala_empId = #{record.salaEmpid,jdbcType=INTEGER},
+        sala_baseSalary = #{record.salaBasesalary,jdbcType=DOUBLE},
+        sala_performanceSalary = #{record.salaPerformancesalary,jdbcType=DOUBLE},
+        sala_attendance = #{record.salaAttendance,jdbcType=DOUBLE},
+        sala_station = #{record.salaStation,jdbcType=DOUBLE}
+        <if test="_parameter != null">
+            <include refid="Update_By_Example_Where_Clause"/>
+        </if>
+    </update>
+    <update id="updateByPrimaryKeySelective" parameterType="com.dimple.bean.Salary">
+        update tbl_salay
+        <set>
+            <if test="salaEmpid != null">
+                sala_empId = #{salaEmpid,jdbcType=INTEGER},
+            </if>
+            <if test="salaBasesalary != null">
+                sala_baseSalary = #{salaBasesalary,jdbcType=DOUBLE},
+            </if>
+            <if test="salaPerformancesalary != null">
+                sala_performanceSalary = #{salaPerformancesalary,jdbcType=DOUBLE},
+            </if>
+            <if test="salaAttendance != null">
+                sala_attendance = #{salaAttendance,jdbcType=DOUBLE},
+            </if>
+            <if test="salaStation != null">
+                sala_station = #{salaStation,jdbcType=DOUBLE},
+            </if>
+        </set>
+        where sala_id = #{salaId,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.dimple.bean.Salary">
+    update tbl_salay
+    set sala_empId = #{salaEmpid,jdbcType=INTEGER},
+      sala_baseSalary = #{salaBasesalary,jdbcType=DOUBLE},
+      sala_performanceSalary = #{salaPerformancesalary,jdbcType=DOUBLE},
+      sala_attendance = #{salaAttendance,jdbcType=DOUBLE},
+      sala_station = #{salaStation,jdbcType=DOUBLE}
+    where sala_id = #{salaId,jdbcType=INTEGER}
+  </update>
+</mapper>

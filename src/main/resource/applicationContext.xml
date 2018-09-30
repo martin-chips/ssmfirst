@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+    <!--Spring的配置文件，主要配置和业务逻辑有关的-->
+
+    <!--组件扫描-->
+    <!--和springmvc的配置文件不同，这里不扫描controller-->
+    <!--<context:component-scan base-package="com.dimple" use-default-filters="false">-->
+        <!--&lt;!&ndash;这里配置不扫描controller注解&ndash;&gt;-->
+        <!--<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>-->
+    <!--</context:component-scan>-->
+
+    <context:component-scan base-package="com.dimple"/>
+    <!--数据源，事务控制-->
+    <context:property-placeholder location="classpath:jdbc-config.properties"/>
+
+    <!--配置数据源-->
+    <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+        <property name="driverClass" value="${db.driver}"/>
+        <property name="password" value="${db.password}"/>
+        <property name="user" value="${db.username}"/>
+        <property name="jdbcUrl" value="${db.url}"/>
+    </bean>
+
+    <!--配置和mybatis的整合-->
+    <!--SqlSessionFactoryBean能够帮助创建sqlSessionFactoryBean-->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <!--Mybatis全局配置文件地址-->
+        <property name="configLocation" value="classpath:mybatis-config.xml"/>
+        <!--MapperLocation指定mapper文件的地址-->
+        <property name="mapperLocations" value="classpath:mapper/*.xml"/>
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+    <!--配置扫描器，将MyBatis接口的实现(是代理对象)加入到ioc容器中-->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <!--扫描所有的dao接口的实现，加入到ioc容器中-->
+        <property name="basePackage" value="com.dimple.dao"/>
+    </bean>
+
+    <!--事务控制-->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <!--控制数据源-->
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+    <tx:annotation-driven transaction-manager="transactionManager"/>
+
+
+    <bean id="sqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">
+        <constructor-arg name="sqlSessionFactory" ref="sqlSessionFactory"/>
+        <constructor-arg name="executorType" value="BATCH"/>
+    </bean>
+    <!--开启基于注解的事务，或者XML配置形式的事务-->
+    <!--<aop:config>-->
+        <!--&lt;!&ndash;切入点表达式&ndash;&gt;-->
+        <!--&lt;!&ndash;expression:第一个访问权限控制符（public、protect），第二个是路径，第三个..代表所有的子包&ndash;&gt;-->
+        <!--<aop:pointcut id="txPoint" expression="execution(* com.dimple.service .. *(..))"/>-->
+        <!--&lt;!&ndash;配置事务增强&ndash;&gt;-->
+        <!--<aop:advisor advice-ref="txAdvice" pointcut-ref="txPoint"/>-->
+    <!--</aop:config>-->
+    <!--&lt;!&ndash;配置事务增强，事务如何写入&ndash;&gt;-->
+    <!--<tx:advice id="txAdvice" transaction-manager="transactionManager">-->
+        <!--<tx:attributes>-->
+            <!--&lt;!&ndash;所有方法都是事务方法&ndash;&gt;-->
+            <!--<tx:method name="*"/>-->
+            <!--&lt;!&ndash;以get开头的方法都是查询方法，调优&ndash;&gt;-->
+            <!--<tx:method name="get*" read-only="true"/>-->
+        <!--</tx:attributes>-->
+    <!--</tx:advice>-->
+
+
+    <!--Spring配置文件的核心：
+        数据源
+        与MyBatis整合
+        事务控制
+    -->
+
+</beans>
